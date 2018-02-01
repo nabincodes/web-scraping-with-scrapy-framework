@@ -14,8 +14,12 @@ class QuoteSpider(scrapy.Spider):
             author = quote.xpath('.//*[@itemprop="author"]/text()').extract_first()
             tags = quote.xpath('.//*[@itemprop="keywords"]/@content').extract_first()
 
-            print '\n'
-            print text.encode('ascii', 'ignore')
-            print author
-            print tags
-            print '\n'
+            yield{
+                'Quote': text.encode('ascii','ignore'),
+                'Author': author,
+                'Tags': tags
+            }
+
+        next_page_url = response.xpath('//*[@class="next"]/a/@href').extract_first()
+        next_page = response.urljoin(next_page_url)
+        yield scrapy.Request(next_page)
